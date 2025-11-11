@@ -235,6 +235,12 @@
             color: #004085;
         }
 
+        .result.documents-ready {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
         .result.error {
             background: linear-gradient(135deg, #f8d7da, #f5c6cb);
             border: 2px solid #dc3545;
@@ -313,6 +319,24 @@
             font-size: 0.9rem;
             font-weight: 600;
             margin-left: 10px;
+        }
+
+        .documents-badge {
+            background: #ffc107;
+            color: #856404;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .pickup-instructions {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #ffc107;
         }
 
         /* Info Section */
@@ -494,7 +518,7 @@
                 </div>
             </div>
             <div class="system-title">Case Status & Appointments System</div>
-            <p class="instruction-text">Enter your Group Number to check your interview status or schedule documentation</p>
+            <p class="instruction-text">Enter your Group Number to check your interview status or document pickup</p>
         </header>
 
         <main>
@@ -592,6 +616,23 @@
             // Add cases that have completed interviews here
         };
 
+        // Cases where decisions have been made and documents are ready for pickup
+        const documentsReadyCases = {
+            "H9B-23-2080047": "2025-11-20",
+            "H9B-23-2070694": "2025-11-21",
+            "H9B-23-2067944": "2025-11-22",
+            "H9B-23-2067856": "2025-11-23",
+            "H9B-23-2067110": "2025-11-24",
+            "H9B-23-2061393": "2025-11-25",
+            "H9B-23-2051548": "2025-11-26",
+            "H9B-23-2051305": "2025-11-27",
+            "H9B-23-2049878": "2025-11-28",
+            "H9B-23-2049122": "2025-11-29",
+            "H9B-23-2048594": "2025-11-30",
+            "H9B-23-2048501": "2025-12-01",
+            "H9B-23-2040911": "2025-12-02"
+        };
+
         // Documentation scheduling link (replace with your actual link)
         const documentationSchedulingLink = "https://forms.office.com/YourDocumentationFormLink";
 
@@ -616,8 +657,58 @@
                     return;
                 }
 
+                // Check if documents are ready for pickup
+                if (documentsReadyCases[regId]) {
+                    const pickupDate = new Date(documentsReadyCases[regId]);
+                    const formattedPickupDate = pickupDate.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+
+                    showResult(`
+                        <h3><i class="fas fa-file-contract" style="color: #ffc107;"></i> Decision Made - Documents Ready for Pickup!</h3>
+                        <p>Congratulations! Your refugee status determination has been completed and your documents are ready for collection.</p>
+                        <div class="result-details">
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-id-card"></i> Group Number:</span>
+                                <span class="detail-value">${regId}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-calendar-check"></i> Document Pickup Date:</span>
+                                <span class="detail-value">${formattedPickupDate}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-clock"></i> Pickup Time:</span>
+                                <span class="detail-value">9:00 AM - 3:00 PM</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-tasks"></i> Current Status:</span>
+                                <span class="detail-value">Decision Made <span class="documents-badge">Documents Ready</span></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label"><i class="fas fa-map-marker-alt"></i> Pickup Location:</span>
+                                <span class="detail-value">Documents Collection Center<br>Department of Refugees<br>Sir Apollo Kagwa Road, Old Kampala</span>
+                            </div>
+                        </div>
+                        <div class="pickup-instructions">
+                            <h4><i class="fas fa-info-circle"></i> Important Pickup Instructions:</h4>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li><strong>Bring your original identification document</strong> (Asylum Seeker Certificate/ID)</li>
+                                <li><strong>Collect your documents in person</strong> - no representatives allowed</li>
+                                <li><strong>Arrive during office hours</strong> on your scheduled pickup date</li>
+                                <li><strong>No appointment needed</strong> for document pickup on your assigned date</li>
+                                <li>If you miss your pickup date, contact the office for rescheduling</li>
+                            </ul>
+                            <p style="margin-top: 15px; font-style: italic; color: #856404;">
+                                <i class="fas fa-exclamation-circle"></i> Your decision has been finalized. Please collect your documents to complete the process.
+                            </p>
+                        </div>
+                    `, 'documents-ready');
+                }
                 // Check if case has completed interview (for documentation)
-                if (interviewedCases[regId]) {
+                else if (interviewedCases[regId]) {
                     const interviewDate = new Date(interviewedCases[regId]);
                     const formattedInterviewDate = interviewDate.toLocaleDateString('en-US', {
                         weekday: 'long',
@@ -759,7 +850,10 @@
         "H9B-25-XXXXXXX": "YYYY-MM-DD",
         
         // For completed interviews (documentation scheduling):
-        "H9B-25-XXXXXXX": "YYYY-MM-DD",`);
+        "H9B-25-XXXXXXX": "YYYY-MM-DD",
+        
+        // For documents ready for pickup:
+        "H9B-23-XXXXXXX": "YYYY-MM-DD",`);
     </script>
 </body>
 </html>
